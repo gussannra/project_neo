@@ -2,6 +2,9 @@ package platform;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello world!");
+
+        WindowManager windowManager = new WindowManager("my first window", 512, 512);
+        windowManager.createWindow();
+
     }
 }
