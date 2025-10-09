@@ -1,15 +1,10 @@
 package platform;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.image.BufferStrategy;
-import java.awt.image.BufferedImage;
-import java.awt.Color;
-import java.awt.Frame;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.*;
 
-public class WindowManager extends WindowAdapter {
+public class WindowManager extends WindowAdapter implements ComponentListener, MouseListener {
     private String title;
     private int width;
     private int height;
@@ -17,6 +12,9 @@ public class WindowManager extends WindowAdapter {
     private BufferStrategy bufferStrategy;
     private BufferedImage buffer;
     private Graphics2D bufferGraphics;
+    private Insets insets;
+
+    private Point mousePoint;
 
     public WindowManager(String title, int width, int height) {
         this.title = title;
@@ -27,14 +25,19 @@ public class WindowManager extends WindowAdapter {
         buffer = new BufferedImage(512, 512, BufferedImage.TYPE_INT_RGB);
         bufferGraphics = buffer.createGraphics();
         bufferGraphics.setBackground(Color.BLACK);
+        mousePoint = new Point(0, 0);
     }
 
     public void createWindow() {
         frame = new Frame(title);
         frame.setVisible(true);
-        frame.setSize(width, height);
+        insets = frame.getInsets();
+        frame.setSize(width + insets.left + insets.right, height + insets.top + insets.bottom);
         frame.setLocationRelativeTo(null);
+
         frame.addWindowListener(this);
+        frame.addComponentListener(this);
+        frame.addMouseListener(this);
 
         frame.createBufferStrategy(2);
         bufferStrategy = frame.getBufferStrategy();
@@ -43,19 +46,64 @@ public class WindowManager extends WindowAdapter {
     public void flip(int[] pixels) {
         buffer.setRGB(0, 0, 512, 512, pixels, 0, 512);
         Graphics g = bufferStrategy.getDrawGraphics();
-        g.drawImage(buffer, 0, 0, frame.getWidth(), frame.getHeight(), null);
+        g.drawImage(buffer, insets.left, insets.top, width, height, null);
         g.dispose();
 
         bufferStrategy.show();
     }
 
-    public void clearBuffer() {
-        bufferGraphics.clearRect(0, 0, frame.getWidth(), frame.getHeight());
-    }
-
     @Override
     public void windowClosing(WindowEvent e) {
         frame.dispose();
+    }
+
+    @Override
+    public void componentResized(ComponentEvent e) {
+        width = frame.getWidth() - insets.left - insets.right;
+        height = frame.getHeight() - insets.top - insets.bottom;
+
+    }
+
+    @Override
+    public void componentHidden(ComponentEvent e) {
+    }
+
+    @Override
+    public void componentMoved(ComponentEvent e) {
+    }
+
+    @Override
+    public void componentShown(ComponentEvent e) {
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        mousePoint.x = e.getX();
+        mousePoint.y = e.getY();
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    public Point getPoint() {
+        return mousePoint;
     }
 
 }
