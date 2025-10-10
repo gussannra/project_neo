@@ -22,7 +22,7 @@ public class WindowManager extends WindowAdapter implements ComponentListener, M
         this.height = height;
         frame = null;
         bufferStrategy = null;
-        buffer = new BufferedImage(512, 512, BufferedImage.TYPE_INT_RGB);
+        buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         bufferGraphics = buffer.createGraphics();
         bufferGraphics.setBackground(Color.BLACK);
         mousePoint = new Point(0, 0);
@@ -44,7 +44,7 @@ public class WindowManager extends WindowAdapter implements ComponentListener, M
     }
 
     public void flip(int[] pixels) {
-        buffer.setRGB(0, 0, 512, 512, pixels, 0, 512);
+        buffer.setRGB(0, 0, buffer.getWidth(), buffer.getHeight(), pixels, 0, buffer.getWidth());
         Graphics g = bufferStrategy.getDrawGraphics();
         g.drawImage(buffer, insets.left, insets.top, width, height, null);
         g.dispose();
@@ -78,8 +78,14 @@ public class WindowManager extends WindowAdapter implements ComponentListener, M
 
     @Override
     public void mousePressed(MouseEvent e) {
-        mousePoint.x = e.getX();
-        mousePoint.y = e.getY();
+        float xScalingFactor = (float) buffer.getWidth() / width;
+        float yScalingFactor = (float) buffer.getHeight() / height;
+
+        int mouseX = e.getX() - insets.left;
+        int mouseY = e.getY() - insets.top;
+
+        mousePoint.x = (int)(xScalingFactor * mouseX);
+        mousePoint.y = (int)(yScalingFactor * mouseY);
     }
 
     @Override

@@ -10,16 +10,28 @@ public class Renderer {
     public void draw(int[] outPixels, DrawInfo drawInfo) {
         clear(outPixels);
 
-        for (int i = 0; i < outPixels.length; i++) {
-            Random rand = new Random();
-            int choice = rand.nextInt(2);
-            int red = 0x00FF0000;
-            int blue = 0x000000FF;
+        int w = 50;
+        int h = 50;
+        int mx = drawInfo.mousePoint.x;
+        int my = drawInfo.mousePoint.y;
 
-            if (choice == 0) {
-                outPixels[i] = red;
-            } else {
-                outPixels[i] = blue;
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                int offsetY = y - h / 2;
+                int offsetX = x - w / 2;
+                int drawX = mx + offsetX;
+                int drawY = my + offsetY;
+                int index = drawX + drawY * 512;
+
+                if (index < 0 || index >= outPixels.length) {
+                    continue;
+                }
+
+                if (drawX >= drawInfo.width || drawX < 0) {
+                    continue;
+                }
+
+                outPixels[index] = 0x00FF00;
             }
 
         }
