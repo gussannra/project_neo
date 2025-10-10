@@ -1,6 +1,7 @@
 package platform;
 
 import graphics.*;
+import java.io.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -11,6 +12,8 @@ public class Main {
         windowManager.createWindow();
 
         Renderer renderer = new Renderer();
+        renderer.loadImage(new File("res/textures/test.png"));
+
         DrawInfo drawInfo = new DrawInfo();
         drawInfo.width = drawWidth;
         drawInfo.height = drawHeight;

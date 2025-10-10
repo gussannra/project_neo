@@ -2,14 +2,49 @@ package graphics;
 
 import java.util.*;
 
+import javax.imageio.ImageIO;
+
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
 public class Renderer {
+    private BufferedImage image;
 
     public Renderer() {
     }
 
     public void draw(int[] outPixels, DrawInfo drawInfo) {
         clear(outPixels);
+        int mx = drawInfo.mousePoint.x;
+        int my = drawInfo.mousePoint.y;
 
+        drawImage(outPixels, drawInfo, mx, my);
+
+    }
+
+    private void clear(int[] outPixels) {
+        Arrays.fill(outPixels, 0);
+    }
+
+    public void loadImage(File file) {
+        try {
+            image = ImageIO.read(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void drawImage(int[] outPixels, DrawInfo drawInfo, int x, int y) {
+        int sourceX = 0;
+        int sourceY = 0;
+        int sourceWidth = image.getWidth();
+        int sourceHeight = image.getHeight();
+        int destinationIndex = x + y * drawInfo.width;
+        image.getRGB(sourceX, sourceY, sourceWidth, sourceHeight, outPixels, destinationIndex, drawInfo.width);
+    }
+
+    public void drawRect(int[] outPixels, DrawInfo drawInfo) {
         int w = 50;
         int h = 50;
         int mx = drawInfo.mousePoint.x;
@@ -35,9 +70,5 @@ public class Renderer {
             }
 
         }
-    }
-
-    private void clear(int[] outPixels) {
-        Arrays.fill(outPixels, 0);
     }
 }
