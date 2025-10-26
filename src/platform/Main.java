@@ -2,11 +2,14 @@ package platform;
 
 import graphics.DrawInfo;
 import graphics.Renderer;
+
 import java.io.*;
 
 import audio.AudioPlayer;
 
 public class Main {
+    private static int drawHeight;
+
     public static void main(String[] args) throws InterruptedException {
         final int drawWidth = 512;
         final int drawHeight = 512;
@@ -34,13 +37,13 @@ public class Main {
 
         audioPlayer.start();
         long frameEndTime = System.nanoTime();
-        while (true) {
+        while (windowManager.getIsWindowAlive()) {
             long frameStartTime = frameEndTime;
 
             windowManager.flip(pixels);
 
-            // System.out.println("\033[0;33mSeconds per frame: " + secondsPerFrame);
-            // System.out.println("\033[0;31mFrames per second: " + fps);
+            System.out.println("\033[0;33mSeconds per frame: " + secondsPerFrame);
+            System.out.println("\033[0;31mFrames per second: " + fps);
 
             drawInfo.mousePoint = windowManager.getPoint();
             renderer.draw(pixels, drawInfo);
@@ -71,5 +74,7 @@ public class Main {
             secondsPerFrame = (frameEndTime - frameStartTime) / 1_000_000_000.0f;
             fps = 1.0f / secondsPerFrame;
         }
+
+        windowManager.destroyWindow();
     }
 }

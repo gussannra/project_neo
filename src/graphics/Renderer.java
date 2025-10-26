@@ -36,10 +36,14 @@ public class Renderer {
     }
 
     public void drawImage(int[] outPixels, DrawInfo drawInfo, int x, int y) {
-        int sourceX = 0;
-        int sourceY = 0;
-        int sourceWidth = image.getWidth();
-        int sourceHeight = image.getHeight();
+        int sourceX = Math.max(-x, 0);
+        int sourceY = Math.max(-y, 0);
+
+        int x2 = x + image.getWidth() - drawInfo.width;
+        int y2 = y + image.getHeight() - drawInfo.height;
+
+        int sourceWidth = image.getWidth() + Math.min(-x2, 0);
+        int sourceHeight = image.getHeight() + Math.min(-y2, 0);
         int destinationIndex = x + y * drawInfo.width;
         image.getRGB(sourceX, sourceY, sourceWidth, sourceHeight, outPixels, destinationIndex, drawInfo.width);
     }
