@@ -15,6 +15,7 @@ public class WindowManager extends WindowAdapter implements ComponentListener, M
     private Insets insets;
 
     private Point mousePoint;
+    private boolean isWindowAlive;
 
     public WindowManager(String title, int width, int height) {
         this.title = title;
@@ -26,6 +27,7 @@ public class WindowManager extends WindowAdapter implements ComponentListener, M
         bufferGraphics = buffer.createGraphics();
         bufferGraphics.setBackground(Color.BLACK);
         mousePoint = new Point(0, 0);
+        isWindowAlive = false;
     }
 
     public void createWindow() {
@@ -41,27 +43,35 @@ public class WindowManager extends WindowAdapter implements ComponentListener, M
 
         frame.createBufferStrategy(2);
         bufferStrategy = frame.getBufferStrategy();
+        isWindowAlive = true;
+    }
+
+    public void destroyWindow() {
+        frame.dispose();
     }
 
     public void flip(int[] pixels) {
         buffer.setRGB(0, 0, buffer.getWidth(), buffer.getHeight(), pixels, 0, buffer.getWidth());
-        Graphics g = bufferStrategy.getDrawGraphics();
-        g.drawImage(buffer, insets.left, insets.top, width, height, null);
-        g.dispose();
 
-        bufferStrategy.show();
+        do {
+            do {
+                Graphics g = bufferStrategy.getDrawGraphics();
+                g.drawImage(buffer, insets.left, insets.top, width, height, null);
+                g.dispose();
+            } while (bufferStrategy.contentsRestored());
+            bufferStrategy.show();
+        } while (bufferStrategy.contentsLost());
     }
 
     @Override
     public void windowClosing(WindowEvent e) {
-        frame.dispose();
+        isWindowAlive = false;
     }
 
     @Override
     public void componentResized(ComponentEvent e) {
         width = frame.getWidth() - insets.left - insets.right;
         height = frame.getHeight() - insets.top - insets.bottom;
-
     }
 
     @Override
@@ -84,8 +94,8 @@ public class WindowManager extends WindowAdapter implements ComponentListener, M
         int mouseX = e.getX() - insets.left;
         int mouseY = e.getY() - insets.top;
 
-        mousePoint.x = (int)(xScalingFactor * mouseX);
-        mousePoint.y = (int)(yScalingFactor * mouseY);
+        mousePoint.x = (int) (xScalingFactor * mouseX);
+        mousePoint.y = (int) (yScalingFactor * mouseY);
     }
 
     @Override
@@ -110,6 +120,10 @@ public class WindowManager extends WindowAdapter implements ComponentListener, M
 
     public Point getPoint() {
         return mousePoint;
+    }
+
+    public boolean getIsWindowAlive() {
+        return isWindowAlive;
     }
 
 }
