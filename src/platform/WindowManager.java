@@ -14,7 +14,10 @@ public class WindowManager extends WindowAdapter implements ComponentListener, M
     private Graphics2D bufferGraphics;
     private Insets insets;
 
-    private Point mousePoint;
+    private float mousePressedX;
+    private float mousePressedY;
+
+    private boolean didPressMouse;
     private boolean isWindowAlive;
 
     public WindowManager(String title, int width, int height) {
@@ -26,7 +29,8 @@ public class WindowManager extends WindowAdapter implements ComponentListener, M
         buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         bufferGraphics = buffer.createGraphics();
         bufferGraphics.setBackground(Color.BLACK);
-        mousePoint = new Point(0, 0);
+        mousePressedX = 0.0f;
+        mousePressedY = 0.0f;
         isWindowAlive = false;
     }
 
@@ -63,6 +67,13 @@ public class WindowManager extends WindowAdapter implements ComponentListener, M
         } while (bufferStrategy.contentsLost());
     }
 
+    public void updateInput(Input outInput) {
+        outInput.setMousePressedX(mousePressedX);
+        outInput.setMousePressedY(mousePressedY);
+        outInput.setDidPressMouse(didPressMouse);
+        didPressMouse = false;
+    }
+
     @Override
     public void windowClosing(WindowEvent e) {
         isWindowAlive = false;
@@ -94,8 +105,13 @@ public class WindowManager extends WindowAdapter implements ComponentListener, M
         int mouseX = e.getX() - insets.left;
         int mouseY = e.getY() - insets.top;
 
-        mousePoint.x = (int) (xScalingFactor * mouseX);
-        mousePoint.y = (int) (yScalingFactor * mouseY);
+        int mousePressedXInt = (int) (xScalingFactor * mouseX);
+        int mousePressedYInt = (int) (yScalingFactor * mouseY);
+        mousePressedX = (float) mousePressedXInt / buffer.getWidth();
+        mousePressedY = (float) mousePressedYInt / buffer.getHeight();
+
+
+        didPressMouse = true;
     }
 
     @Override
@@ -116,10 +132,6 @@ public class WindowManager extends WindowAdapter implements ComponentListener, M
     @Override
     public void mouseReleased(MouseEvent e) {
 
-    }
-
-    public Point getPoint() {
-        return mousePoint;
     }
 
     public boolean getIsWindowAlive() {

@@ -1,5 +1,8 @@
 package platform;
 
+import audio.AudioCommands;
+import game.Game;
+import graphics.DrawCommands;
 import graphics.DrawInfo;
 import graphics.Renderer;
 
@@ -27,6 +30,11 @@ public class Main {
         drawInfo.width = drawWidth;
         drawInfo.height = drawHeight;
 
+        Game game = new Game();
+        Input input = new Input();
+        DrawCommands drawCommands = new DrawCommands();
+        AudioCommands audioCommands = new AudioCommands();
+
         int[] pixels = new int[drawWidth * drawHeight];
 
         final float targetFps = 60.0f;
@@ -37,17 +45,21 @@ public class Main {
 
         audioPlayer.start();
         long frameEndTime = System.nanoTime();
+
+        // THE MAIN LOOP
         while (windowManager.getIsWindowAlive()) {
             long frameStartTime = frameEndTime;
 
             windowManager.flip(pixels);
 
-            System.out.println("\033[0;33mSeconds per frame: " + secondsPerFrame);
-            System.out.println("\033[0;31mFrames per second: " + fps);
+            // System.out.println("\033[0;33mSeconds per frame: " + secondsPerFrame);
+            // System.out.println("\033[0;31mFrames per second: " + fps);
 
-            drawInfo.mousePoint = windowManager.getPoint();
+            windowManager.updateInput(input);
+
+            game.update(input, drawCommands, audioCommands);
+
             renderer.draw(pixels, drawInfo);
-
             audioPlayer.writeAudioStream();
 
             frameEndTime = System.nanoTime();
@@ -68,7 +80,7 @@ public class Main {
             }
 
             if (overslept) {
-                System.out.println("you overslept");
+                System.out.println("\033[0;36myou overslept");
             }
 
             secondsPerFrame = (frameEndTime - frameStartTime) / 1_000_000_000.0f;
