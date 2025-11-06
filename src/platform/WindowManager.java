@@ -29,6 +29,7 @@ public class WindowManager extends WindowAdapter implements ComponentListener, M
         buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         bufferGraphics = buffer.createGraphics();
         bufferGraphics.setBackground(Color.BLACK);
+        bufferGraphics.dispose();
         mousePressedX = 0.0f;
         mousePressedY = 0.0f;
         isWindowAlive = false;
@@ -54,8 +55,8 @@ public class WindowManager extends WindowAdapter implements ComponentListener, M
         frame.dispose();
     }
 
-    public void flip(int[] pixels) {
-        buffer.setRGB(0, 0, buffer.getWidth(), buffer.getHeight(), pixels, 0, buffer.getWidth());
+    public void flip() {
+//        bufferGraphics.dispose();
 
         do {
             do {
@@ -72,6 +73,11 @@ public class WindowManager extends WindowAdapter implements ComponentListener, M
         outInput.setMousePressedY(mousePressedY);
         outInput.setDidPressMouse(didPressMouse);
         didPressMouse = false;
+    }
+
+    public Graphics2D createGraphics() {
+        bufferGraphics = buffer.createGraphics();
+        return bufferGraphics;
     }
 
     @Override
