@@ -4,7 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
 
-public class WindowManager extends WindowAdapter implements ComponentListener, MouseListener {
+public class WindowManager extends WindowAdapter implements ComponentListener, MouseListener, MouseMotionListener {
     private String title;
     private int width;
     private int height;
@@ -16,6 +16,8 @@ public class WindowManager extends WindowAdapter implements ComponentListener, M
 
     private float mousePressedX;
     private float mousePressedY;
+    private float mouseX;
+    private float mouseY;
 
     private boolean didPressMouse;
     private boolean isWindowAlive;
@@ -45,6 +47,7 @@ public class WindowManager extends WindowAdapter implements ComponentListener, M
         frame.addWindowListener(this);
         frame.addComponentListener(this);
         frame.addMouseListener(this);
+        frame.addMouseMotionListener(this);
 
         frame.createBufferStrategy(2);
         bufferStrategy = frame.getBufferStrategy();
@@ -73,10 +76,15 @@ public class WindowManager extends WindowAdapter implements ComponentListener, M
         outInput.setMousePressedY(mousePressedY);
         outInput.setDidPressMouse(didPressMouse);
         didPressMouse = false;
+
+        outInput.setMouseX(mouseX);
+        outInput.setMouseY(mouseY);
+
     }
 
     public Graphics2D createGraphics() {
         bufferGraphics = buffer.createGraphics();
+        bufferGraphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         return bufferGraphics;
     }
 
@@ -144,4 +152,22 @@ public class WindowManager extends WindowAdapter implements ComponentListener, M
         return isWindowAlive;
     }
 
+    @Override
+    public void mouseDragged(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        float xScalingFactor = (float) buffer.getWidth() / width;
+        float yScalingFactor = (float) buffer.getHeight() / height;
+
+        int mouseX = e.getX() - insets.left;
+        int mouseY = e.getY() - insets.top;
+
+        int mouseXInt = (int) (xScalingFactor * mouseX);
+        int mouseYInt = (int) (yScalingFactor * mouseY);
+        this.mouseX = (float) mouseXInt / buffer.getWidth();
+        this.mouseY = (float) mouseYInt / buffer.getHeight();
+    }
 }

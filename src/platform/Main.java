@@ -1,6 +1,7 @@
 package platform;
 
-import audio.AudioCommands;
+import audio.Sound;
+import audio.commands.AudioCommand;
 import game.Game;
 import graphics.DrawInfo;
 import graphics.Renderer;
@@ -8,7 +9,6 @@ import graphics.Renderer;
 import java.awt.*;
 import java.io.*;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Queue;
 
 import audio.AudioPlayer;
@@ -29,7 +29,7 @@ public class Main {
         renderer.loadImage(Texture.PIG, new File("res/textures/test.png"));
 
         AudioPlayer audioPlayer = new AudioPlayer();
-        audioPlayer.loadFile(new File("res/audio/test.wav"));
+        audioPlayer.loadFile(Sound.MAIN_THEME, new File("res/audio/test.wav"));
 
         DrawInfo drawInfo = new DrawInfo();
         drawInfo.width = drawWidth;
@@ -38,7 +38,7 @@ public class Main {
         Game game = new Game();
         Input input = new Input();
         Queue<DrawCommand> drawCommands = new ArrayDeque<>();
-        AudioCommands audioCommands = new AudioCommands();
+        Queue<AudioCommand> audioCommands = new ArrayDeque<>();
 
         final float targetFps = 60.0f;
         final float targetSecondsPerFrame = 1.0f / targetFps;
@@ -64,7 +64,7 @@ public class Main {
             game.update(input, drawCommands, audioCommands);
 
             renderer.draw(g, drawCommands);
-            audioPlayer.writeAudioStream();
+            audioPlayer.writeAudio(audioCommands);
 
             frameEndTime = System.nanoTime();
             long elapsedTime = frameEndTime - frameStartTime;

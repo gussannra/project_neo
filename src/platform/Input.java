@@ -4,6 +4,8 @@ public class Input {
     private float mousePressedX;
     private float mousePressedY;
     private boolean didPressMouse;
+    private float mouseX;
+    private float mouseY;
 
     public Input() {
 
@@ -35,5 +37,21 @@ public class Input {
 
     public void setMousePressedY(float mousePressedY) {
         this.mousePressedY = mousePressedY;
+    }
+
+    public float getMouseX() {
+        return mouseX;
+    }
+
+    public void setMouseX(float mouseX) {
+        this.mouseX = mouseX;
+    }
+
+    public float getMouseY() {
+        return mouseY;
+    }
+
+    public void setMouseY(float mouseY) {
+        this.mouseY = mouseY;
     }
 }

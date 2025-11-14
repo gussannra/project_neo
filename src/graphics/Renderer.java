@@ -3,6 +3,7 @@ package graphics;
 import graphics.commands.DrawCommand;
 import graphics.commands.DrawCommandVisitor;
 import graphics.commands.DrawImageCommand;
+import graphics.commands.DrawTextCommand;
 
 import java.awt.*;
 import java.util.*;
@@ -16,9 +17,21 @@ import java.io.IOException;
 public class Renderer implements DrawCommandVisitor {
     private Graphics2D g;
     private Map<Texture, BufferedImage> textureMap;
+    private Map<TextFont, Font> fontMap;
+    private Map<TextColor, Color> colorMap;
 
     public Renderer() {
         textureMap = new HashMap<>();
+        fontMap = new HashMap<>();
+        colorMap = new HashMap<>();
+
+        for (TextFont font : TextFont.values()) {
+            fontMap.put(font, new Font(font.fontName, Font.PLAIN, font.size));
+        }
+
+        for (TextColor color : TextColor.values()) {
+            colorMap.put(color, new Color(color.r, color.g, color.b));
+        }
     }
 
     public void draw(Graphics2D g, Queue<DrawCommand> drawCommands) {
@@ -99,5 +112,14 @@ public class Renderer implements DrawCommandVisitor {
         BufferedImage img = textureMap.get(cmd.texture());
 
         g.drawImage(img, x, y, null);
+    }
+
+    @Override
+    public void visit(DrawTextCommand cmd) {
+        int x = convertToBufferPixels(cmd.x());
+        int y = convertToBufferPixels(cmd.y());
+        g.setColor(colorMap.get(cmd.color()));
+        g.setFont(fontMap.get(cmd.font()));
+        g.drawString(cmd.text(), x, y);
     }
 }
