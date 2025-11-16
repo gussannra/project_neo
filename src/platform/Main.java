@@ -1,11 +1,19 @@
 package platform;
 
+import game.Game;
+import audio.Sound;
+import audio.AudioPlayer;
+import audio.commands.AudioCommand;
 import graphics.DrawInfo;
 import graphics.Renderer;
+import graphics.Texture;
+import graphics.commands.DrawCommand;
 
+import java.awt.*;
 import java.io.*;
+import java.util.ArrayDeque;
+import java.util.Queue;
 
-import audio.AudioPlayer;
 
 public class Main {
     private static int drawHeight;
@@ -14,20 +22,24 @@ public class Main {
         final int drawWidth = 512;
         final int drawHeight = 512;
 
-        WindowManager windowManager = new WindowManager("my first window", drawWidth, drawHeight);
+        Renderer renderer = new Renderer(drawWidth, drawHeight);
+        renderer.loadImage(Texture.PIG, new File("res/textures/test.png"));
+        InputListener inputListener = new InputListener(drawWidth, drawHeight);
+
+        WindowManager windowManager = new WindowManager("my first window", inputListener);
         windowManager.createWindow();
 
-        Renderer renderer = new Renderer();
-        renderer.loadImage(new File("res/textures/test.png"));
-
         AudioPlayer audioPlayer = new AudioPlayer();
-        audioPlayer.loadFile(new File("res/audio/test.wav"));
+        audioPlayer.loadFile(Sound.MAIN_THEME, new File("res/audio/test.wav"));
 
         DrawInfo drawInfo = new DrawInfo();
         drawInfo.width = drawWidth;
         drawInfo.height = drawHeight;
 
-        int[] pixels = new int[drawWidth * drawHeight];
+        Game game = new Game();
+        Input input = new Input();
+        Queue<DrawCommand> drawCommands = new ArrayDeque<>();
+        Queue<AudioCommand> audioCommands = new ArrayDeque<>();
 
         final float targetFps = 60.0f;
         final float targetSecondsPerFrame = 1.0f / targetFps;
@@ -37,23 +49,27 @@ public class Main {
 
         audioPlayer.start();
         long frameEndTime = System.nanoTime();
+
+        // THE MAIN LOOP
         while (windowManager.getIsWindowAlive()) {
             long frameStartTime = frameEndTime;
 
-            windowManager.flip(pixels);
+            windowManager.flip(renderer.getBuffer());
 
-            System.out.println("\033[0;33mSeconds per frame: " + secondsPerFrame);
-            System.out.println("\033[0;31mFrames per second: " + fps);
+//            System.out.println("\033[0;33mSeconds per frame: " + secondsPerFrame);
+//            System.out.println("\033[0;31mFrames per second: " + fps);
 
-            drawInfo.mousePoint = windowManager.getPoint();
-            renderer.draw(pixels, drawInfo);
+            windowManager.updateInput(input);
 
-            audioPlayer.writeAudioStream();
+            game.update(input, drawCommands, audioCommands);
+
+            renderer.draw(drawCommands);
+            audioPlayer.writeAudio(audioCommands);
 
             frameEndTime = System.nanoTime();
             long elapsedTime = frameEndTime - frameStartTime;
             long sleepTimeNanoSeconds = targetNanoSecondsPerFrame - elapsedTime;
-            long sleepTimeMilliSeconds = sleepTimeNanoSeconds / 1_000_000 - 5;
+            long sleepTimeMilliSeconds = sleepTimeNanoSeconds / 1_000_000 - 8;
 
             if (sleepTimeMilliSeconds > 0) {
                 Thread.sleep(sleepTimeMilliSeconds);
@@ -68,7 +84,7 @@ public class Main {
             }
 
             if (overslept) {
-                System.out.println("you overslept");
+                System.out.println("\033[0;36myou overslept");
             }
 
             secondsPerFrame = (frameEndTime - frameStartTime) / 1_000_000_000.0f;

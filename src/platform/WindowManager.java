@@ -4,29 +4,24 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
 
-public class WindowManager extends WindowAdapter implements ComponentListener, MouseListener {
+public class WindowManager extends WindowAdapter implements ComponentListener {
     private String title;
     private int width;
     private int height;
     private Frame frame;
     private BufferStrategy bufferStrategy;
-    private BufferedImage buffer;
     private Graphics2D bufferGraphics;
     private Insets insets;
-
-    private Point mousePoint;
+    private InputListener inputListener;
     private boolean isWindowAlive;
 
-    public WindowManager(String title, int width, int height) {
+    public WindowManager(String title, InputListener inputListener) {
         this.title = title;
-        this.width = width;
-        this.height = height;
+        this.width = inputListener.getScreenWidth();
+        this.height = inputListener.getScreenHeight();
+        this.inputListener = inputListener;
         frame = null;
         bufferStrategy = null;
-        buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        bufferGraphics = buffer.createGraphics();
-        bufferGraphics.setBackground(Color.BLACK);
-        mousePoint = new Point(0, 0);
         isWindowAlive = false;
     }
 
@@ -34,12 +29,15 @@ public class WindowManager extends WindowAdapter implements ComponentListener, M
         frame = new Frame(title);
         frame.setVisible(true);
         insets = frame.getInsets();
+        inputListener.setxOffset(insets.left);
+        inputListener.setyOffset(insets.top);
         frame.setSize(width + insets.left + insets.right, height + insets.top + insets.bottom);
         frame.setLocationRelativeTo(null);
 
         frame.addWindowListener(this);
         frame.addComponentListener(this);
-        frame.addMouseListener(this);
+        frame.addMouseListener(inputListener);
+        frame.addMouseMotionListener(inputListener);
 
         frame.createBufferStrategy(2);
         bufferStrategy = frame.getBufferStrategy();
@@ -50,9 +48,7 @@ public class WindowManager extends WindowAdapter implements ComponentListener, M
         frame.dispose();
     }
 
-    public void flip(int[] pixels) {
-        buffer.setRGB(0, 0, buffer.getWidth(), buffer.getHeight(), pixels, 0, buffer.getWidth());
-
+    public void flip(BufferedImage buffer) {
         do {
             do {
                 Graphics g = bufferStrategy.getDrawGraphics();
@@ -61,6 +57,10 @@ public class WindowManager extends WindowAdapter implements ComponentListener, M
             } while (bufferStrategy.contentsRestored());
             bufferStrategy.show();
         } while (bufferStrategy.contentsLost());
+    }
+
+    public void updateInput(Input outInput) {
+        outInput.set(inputListener.getInputBuffer());
     }
 
     @Override
@@ -72,6 +72,9 @@ public class WindowManager extends WindowAdapter implements ComponentListener, M
     public void componentResized(ComponentEvent e) {
         width = frame.getWidth() - insets.left - insets.right;
         height = frame.getHeight() - insets.top - insets.bottom;
+
+        inputListener.setScreenWidth(width);
+        inputListener.setScreenHeight(height);
     }
 
     @Override
@@ -86,44 +89,7 @@ public class WindowManager extends WindowAdapter implements ComponentListener, M
     public void componentShown(ComponentEvent e) {
     }
 
-    @Override
-    public void mousePressed(MouseEvent e) {
-        float xScalingFactor = (float) buffer.getWidth() / width;
-        float yScalingFactor = (float) buffer.getHeight() / height;
-
-        int mouseX = e.getX() - insets.left;
-        int mouseY = e.getY() - insets.top;
-
-        mousePoint.x = (int) (xScalingFactor * mouseX);
-        mousePoint.y = (int) (yScalingFactor * mouseY);
-    }
-
-    @Override
-    public void mouseClicked(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-
-    }
-
-    public Point getPoint() {
-        return mousePoint;
-    }
-
     public boolean getIsWindowAlive() {
         return isWindowAlive;
     }
-
 }
