@@ -1,15 +1,9 @@
 package game;
 
-import audio.Sound;
 import audio.commands.AudioCommand;
-import audio.commands.PlayAudioCommand;
-import game.ui.Button;
-import graphics.TextColor;
+import game.ui.TextButton;
 import graphics.TextFont;
-import graphics.Texture;
 import graphics.commands.DrawCommand;
-import graphics.commands.DrawImageCommand;
-import graphics.commands.DrawTextCommand;
 import platform.Input;
 
 import java.util.Queue;
@@ -17,21 +11,16 @@ import java.util.Queue;
 public class Game {
     private float x = 0;
     private float y = 0;
-    private Button button;
+    private TextButton textButton;
 
     public Game() {
-        button = new Button(0.0f, 0.0f, 0.2f, 0.2f);
+        textButton = new TextButton(0.2f, 0.2f, TextFont.MENU_FONT);
+        textButton.setText("Flashy begin");
     }
 
     public void update(final Input input, Queue<DrawCommand> outDraw, Queue<AudioCommand> outAudio) {
-        button.update(input);
-        TextColor color = TextColor.WHITE;
-        if (button.getState() == Button.ButtonState.HOVER) {
-            color = TextColor.YELLOW;
-        }
+        textButton.update(input, outDraw);
 
-        DrawTextCommand drawTextCommand = new DrawTextCommand("Start", 0.4f, 0.4f, TextFont.MENU_FONT, color);
-        outDraw.add(drawTextCommand);
 
 //        if (input.isDidPressMouse()) {
 //            x = input.getMousePressedX();

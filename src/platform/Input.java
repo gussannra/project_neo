@@ -6,13 +6,30 @@ public class Input {
     private boolean didPressMouse;
     private float mouseX;
     private float mouseY;
+    private boolean isLeftMouseButtonDown;
 
     public Input() {
+    }
 
+    public void set(Input input) {
+        mousePressedX = input.mousePressedX;
+        mousePressedY = input.mousePressedY;
+        didPressMouse = input.didPressMouse;
+        mouseX = input.mouseX;
+        mouseY = input.mouseY;
+        isLeftMouseButtonDown = input.isLeftMouseButtonDown;
     }
 
     public void clear() {
-         didPressMouse = false;
+        didPressMouse = false;
+    }
+
+    public boolean isLeftMouseButtonDown() {
+        return isLeftMouseButtonDown;
+    }
+
+    public void setLeftMouseButtonDown(boolean leftMouseButtonDown) {
+        isLeftMouseButtonDown = leftMouseButtonDown;
     }
 
     public float getMousePressedX() {

@@ -4,36 +4,24 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
 
-public class WindowManager extends WindowAdapter implements ComponentListener, MouseListener, MouseMotionListener {
+public class WindowManager extends WindowAdapter implements ComponentListener {
     private String title;
     private int width;
     private int height;
     private Frame frame;
     private BufferStrategy bufferStrategy;
-    private BufferedImage buffer;
     private Graphics2D bufferGraphics;
     private Insets insets;
-
-    private float mousePressedX;
-    private float mousePressedY;
-    private float mouseX;
-    private float mouseY;
-
-    private boolean didPressMouse;
+    private InputListener inputListener;
     private boolean isWindowAlive;
 
-    public WindowManager(String title, int width, int height) {
+    public WindowManager(String title, InputListener inputListener) {
         this.title = title;
-        this.width = width;
-        this.height = height;
+        this.width = inputListener.getScreenWidth();
+        this.height = inputListener.getScreenHeight();
+        this.inputListener = inputListener;
         frame = null;
         bufferStrategy = null;
-        buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        bufferGraphics = buffer.createGraphics();
-        bufferGraphics.setBackground(Color.BLACK);
-        bufferGraphics.dispose();
-        mousePressedX = 0.0f;
-        mousePressedY = 0.0f;
         isWindowAlive = false;
     }
 
@@ -41,13 +29,15 @@ public class WindowManager extends WindowAdapter implements ComponentListener, M
         frame = new Frame(title);
         frame.setVisible(true);
         insets = frame.getInsets();
+        inputListener.setxOffset(insets.left);
+        inputListener.setyOffset(insets.top);
         frame.setSize(width + insets.left + insets.right, height + insets.top + insets.bottom);
         frame.setLocationRelativeTo(null);
 
         frame.addWindowListener(this);
         frame.addComponentListener(this);
-        frame.addMouseListener(this);
-        frame.addMouseMotionListener(this);
+        frame.addMouseListener(inputListener);
+        frame.addMouseMotionListener(inputListener);
 
         frame.createBufferStrategy(2);
         bufferStrategy = frame.getBufferStrategy();
@@ -58,9 +48,7 @@ public class WindowManager extends WindowAdapter implements ComponentListener, M
         frame.dispose();
     }
 
-    public void flip() {
-//        bufferGraphics.dispose();
-
+    public void flip(BufferedImage buffer) {
         do {
             do {
                 Graphics g = bufferStrategy.getDrawGraphics();
@@ -72,20 +60,7 @@ public class WindowManager extends WindowAdapter implements ComponentListener, M
     }
 
     public void updateInput(Input outInput) {
-        outInput.setMousePressedX(mousePressedX);
-        outInput.setMousePressedY(mousePressedY);
-        outInput.setDidPressMouse(didPressMouse);
-        didPressMouse = false;
-
-        outInput.setMouseX(mouseX);
-        outInput.setMouseY(mouseY);
-
-    }
-
-    public Graphics2D createGraphics() {
-        bufferGraphics = buffer.createGraphics();
-        bufferGraphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        return bufferGraphics;
+        outInput.set(inputListener.getInputBuffer());
     }
 
     @Override
@@ -97,6 +72,9 @@ public class WindowManager extends WindowAdapter implements ComponentListener, M
     public void componentResized(ComponentEvent e) {
         width = frame.getWidth() - insets.left - insets.right;
         height = frame.getHeight() - insets.top - insets.bottom;
+
+        inputListener.setScreenWidth(width);
+        inputListener.setScreenHeight(height);
     }
 
     @Override
@@ -111,63 +89,7 @@ public class WindowManager extends WindowAdapter implements ComponentListener, M
     public void componentShown(ComponentEvent e) {
     }
 
-    @Override
-    public void mousePressed(MouseEvent e) {
-        float xScalingFactor = (float) buffer.getWidth() / width;
-        float yScalingFactor = (float) buffer.getHeight() / height;
-
-        int mouseX = e.getX() - insets.left;
-        int mouseY = e.getY() - insets.top;
-
-        int mousePressedXInt = (int) (xScalingFactor * mouseX);
-        int mousePressedYInt = (int) (yScalingFactor * mouseY);
-        mousePressedX = (float) mousePressedXInt / buffer.getWidth();
-        mousePressedY = (float) mousePressedYInt / buffer.getHeight();
-
-
-        didPressMouse = true;
-    }
-
-    @Override
-    public void mouseClicked(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-
-    }
-
     public boolean getIsWindowAlive() {
         return isWindowAlive;
-    }
-
-    @Override
-    public void mouseDragged(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseMoved(MouseEvent e) {
-        float xScalingFactor = (float) buffer.getWidth() / width;
-        float yScalingFactor = (float) buffer.getHeight() / height;
-
-        int mouseX = e.getX() - insets.left;
-        int mouseY = e.getY() - insets.top;
-
-        int mouseXInt = (int) (xScalingFactor * mouseX);
-        int mouseYInt = (int) (yScalingFactor * mouseY);
-        this.mouseX = (float) mouseXInt / buffer.getWidth();
-        this.mouseY = (float) mouseYInt / buffer.getHeight();
     }
 }

@@ -1,19 +1,19 @@
 package platform;
 
-import audio.Sound;
-import audio.commands.AudioCommand;
 import game.Game;
+import audio.Sound;
+import audio.AudioPlayer;
+import audio.commands.AudioCommand;
 import graphics.DrawInfo;
 import graphics.Renderer;
+import graphics.Texture;
+import graphics.commands.DrawCommand;
 
 import java.awt.*;
 import java.io.*;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
-import audio.AudioPlayer;
-import graphics.Texture;
-import graphics.commands.DrawCommand;
 
 public class Main {
     private static int drawHeight;
@@ -22,11 +22,12 @@ public class Main {
         final int drawWidth = 512;
         final int drawHeight = 512;
 
-        WindowManager windowManager = new WindowManager("my first window", drawWidth, drawHeight);
-        windowManager.createWindow();
-
-        Renderer renderer = new Renderer();
+        Renderer renderer = new Renderer(drawWidth, drawHeight);
         renderer.loadImage(Texture.PIG, new File("res/textures/test.png"));
+        InputListener inputListener = new InputListener(drawWidth, drawHeight);
+
+        WindowManager windowManager = new WindowManager("my first window", inputListener);
+        windowManager.createWindow();
 
         AudioPlayer audioPlayer = new AudioPlayer();
         audioPlayer.loadFile(Sound.MAIN_THEME, new File("res/audio/test.wav"));
@@ -49,12 +50,11 @@ public class Main {
         audioPlayer.start();
         long frameEndTime = System.nanoTime();
 
-        Graphics2D g = windowManager.createGraphics();
         // THE MAIN LOOP
         while (windowManager.getIsWindowAlive()) {
             long frameStartTime = frameEndTime;
 
-            windowManager.flip();
+            windowManager.flip(renderer.getBuffer());
 
 //            System.out.println("\033[0;33mSeconds per frame: " + secondsPerFrame);
 //            System.out.println("\033[0;31mFrames per second: " + fps);
@@ -63,7 +63,7 @@ public class Main {
 
             game.update(input, drawCommands, audioCommands);
 
-            renderer.draw(g, drawCommands);
+            renderer.draw(drawCommands);
             audioPlayer.writeAudio(audioCommands);
 
             frameEndTime = System.nanoTime();

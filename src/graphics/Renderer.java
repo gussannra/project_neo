@@ -1,9 +1,7 @@
 package graphics;
 
-import graphics.commands.DrawCommand;
-import graphics.commands.DrawCommandVisitor;
-import graphics.commands.DrawImageCommand;
-import graphics.commands.DrawTextCommand;
+import game.ui.TextButton;
+import graphics.commands.*;
 
 import java.awt.*;
 import java.util.*;
@@ -19,14 +17,23 @@ public class Renderer implements DrawCommandVisitor {
     private Map<Texture, BufferedImage> textureMap;
     private Map<TextFont, Font> fontMap;
     private Map<TextColor, Color> colorMap;
+    private BufferedImage buffer;
 
-    public Renderer() {
+    public Renderer(int width, int height) {
         textureMap = new HashMap<>();
         fontMap = new HashMap<>();
         colorMap = new HashMap<>();
+        buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        g = buffer.createGraphics();
+        g.setBackground(Color.BLACK);
+        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
         for (TextFont font : TextFont.values()) {
-            fontMap.put(font, new Font(font.fontName, Font.PLAIN, font.size));
+            int size = (int) (font.size * width * 1.2f); // TODO: don't hardcode.
+            Font awtFont = new Font(font.fontName, Font.PLAIN, size);
+            fontMap.put(font, awtFont);
+            FontMetrics metrics = g.getFontMetrics(awtFont);
+            font.metrics = text -> (float) metrics.stringWidth(text) / buffer.getWidth();
         }
 
         for (TextColor color : TextColor.values()) {
@@ -34,17 +41,15 @@ public class Renderer implements DrawCommandVisitor {
         }
     }
 
-    public void draw(Graphics2D g, Queue<DrawCommand> drawCommands) {
-        this.g = g;
-        clear(g);
+    public void draw(Queue<DrawCommand> drawCommands) {
+        clear();
         while (!drawCommands.isEmpty()) {
             drawCommands.poll().accept(this);
         }
     }
 
-    private void clear(Graphics2D g) {
-        g.setColor(Color.BLACK);
-        g.fillRect(0, 0, 512, 512); // TODO: do not hardcode.
+    private void clear() {
+        g.clearRect(0, 0, buffer.getWidth(), buffer.getHeight());
     }
 
     private void clear(int[] outPixels) {
@@ -121,5 +126,9 @@ public class Renderer implements DrawCommandVisitor {
         g.setColor(colorMap.get(cmd.color()));
         g.setFont(fontMap.get(cmd.font()));
         g.drawString(cmd.text(), x, y);
+    }
+
+    public BufferedImage getBuffer() {
+        return buffer;
     }
 }

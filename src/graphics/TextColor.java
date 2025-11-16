@@ -3,7 +3,8 @@ package graphics;
 public enum TextColor {
     BLACK(0, 0, 0),
     WHITE(255, 255, 255),
-    YELLOW(255, 255, 100);
+    YELLOW(255, 255, 100),
+    RED(255, 0, 0);
 
     public final int r;
     public final int g;
