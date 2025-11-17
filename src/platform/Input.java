@@ -1,6 +1,7 @@
 package platform;
 
 public class Input {
+    private UiInput uiInput;
     private float mousePressedX;
     private float mousePressedY;
     private boolean didPressMouse;
@@ -9,6 +10,7 @@ public class Input {
     private boolean isLeftMouseButtonDown;
 
     public Input() {
+        this.uiInput = new UiInput();
     }
 
     public void set(Input input) {
@@ -70,5 +72,9 @@ public class Input {
 
     public void setMouseY(float mouseY) {
         this.mouseY = mouseY;
+    }
+
+    public UiInput getUiInput() {
+        return uiInput;
     }
 }

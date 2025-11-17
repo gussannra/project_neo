@@ -1,5 +1,7 @@
 package audio;
 
 public enum Sound {
-    MAIN_THEME
+    MAIN_THEME,
+    CLICK,
+    HOVER;
 }

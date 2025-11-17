@@ -97,6 +97,9 @@ public class AudioPlayer implements AudioCommandVisitor {
     public void writeAudioStream() {
         int bytesToWrite = samplesPerFrame * bytesPerSample * channels;
         Arrays.fill(audioBuffer, (byte) 0);
+
+        List<Sound> removeList = new ArrayList<>();
+
         for (Sound sound : currentSounds) {
             AudioInputStream audioStream = soundMap.get(sound);
             try {
@@ -104,7 +107,8 @@ public class AudioPlayer implements AudioCommandVisitor {
                 int bytesRead = audioStream.read(buffer, 0, bytesToWrite);
                 if (bytesRead == -1) {
                     audioStream.reset();
-                    currentSounds.remove(sound);
+                    removeList.add(sound);
+                    continue;
                 }
 
                 for (int i = 0; i < bytesToWrite; ++i) {
@@ -114,6 +118,10 @@ public class AudioPlayer implements AudioCommandVisitor {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+
+        for (Sound s : removeList) {
+            currentSounds.remove(s);
         }
 
         line.write(audioBuffer, 0, bytesToWrite);

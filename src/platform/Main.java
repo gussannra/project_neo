@@ -4,6 +4,7 @@ import game.Game;
 import audio.Sound;
 import audio.AudioPlayer;
 import audio.commands.AudioCommand;
+import game.ui.TextButton;
 import graphics.DrawInfo;
 import graphics.Renderer;
 import graphics.Texture;
@@ -19,18 +20,21 @@ public class Main {
     private static int drawHeight;
 
     public static void main(String[] args) throws InterruptedException {
-        final int drawWidth = 512;
-        final int drawHeight = 512;
+        final int drawWidth = 1000;
+        final int drawHeight = 1000;
 
         Renderer renderer = new Renderer(drawWidth, drawHeight);
         renderer.loadImage(Texture.PIG, new File("res/textures/test.png"));
+        renderer.loadImage(Texture.MAIN_LOGO, new File("res/textures/kittycat.png"));
         InputListener inputListener = new InputListener(drawWidth, drawHeight);
 
-        WindowManager windowManager = new WindowManager("my first window", inputListener);
+        WindowManager windowManager = new WindowManager("project_neo", inputListener);
         windowManager.createWindow();
 
         AudioPlayer audioPlayer = new AudioPlayer();
         audioPlayer.loadFile(Sound.MAIN_THEME, new File("res/audio/test.wav"));
+        audioPlayer.loadFile(Sound.CLICK, new File("res/audio/click.wav"));
+        audioPlayer.loadFile(Sound.HOVER, new File("res/audio/hover.wav"));
 
         DrawInfo drawInfo = new DrawInfo();
         drawInfo.width = drawWidth;
@@ -65,6 +69,8 @@ public class Main {
 
             renderer.draw(drawCommands);
             audioPlayer.writeAudio(audioCommands);
+
+            windowManager.setWindowAlive(input.getUiInput().getExitButton().getState() != TextButton.ButtonState.PRESSED);
 
             frameEndTime = System.nanoTime();
             long elapsedTime = frameEndTime - frameStartTime;

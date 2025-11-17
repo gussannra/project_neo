@@ -1,5 +1,6 @@
 package graphics.commands;
 
+import graphics.TextAlignment;
 import graphics.TextColor;
 import graphics.TextFont;
 

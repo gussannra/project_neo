@@ -60,7 +60,9 @@ public class WindowManager extends WindowAdapter implements ComponentListener {
     }
 
     public void updateInput(Input outInput) {
-        outInput.set(inputListener.getInputBuffer());
+        Input input = inputListener.getInputBuffer();
+        outInput.set(input);
+        input.clear();
     }
 
     @Override
@@ -91,5 +93,9 @@ public class WindowManager extends WindowAdapter implements ComponentListener {
 
     public boolean getIsWindowAlive() {
         return isWindowAlive;
+    }
+
+    public void setWindowAlive(boolean windowAlive) {
+        isWindowAlive = windowAlive;
     }
 }

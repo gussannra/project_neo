@@ -1,5 +1,6 @@
 package graphics;
 
 public enum Texture {
-    PIG
+    PIG,
+    MAIN_LOGO;
 }

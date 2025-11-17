@@ -1,5 +1,9 @@
 package game.ui;
 
+import audio.Sound;
+import audio.commands.AudioCommand;
+import audio.commands.PlayAudioCommand;
+import graphics.TextAlignment;
 import graphics.TextColor;
 import graphics.TextFont;
 import graphics.commands.DrawCommand;
@@ -19,29 +23,34 @@ public class TextButton {
     }
 
     private ButtonState state;
-
     private String text;
     private TextFont font;
+    private TextAlignment alignment;
 
-    public TextButton(float x, float y, TextFont font) {
+    public TextButton(float x, float y, TextFont font, TextAlignment alignment) {
         this.x = x;
         this.y = y;
         this.w = 0;
         this.h = 0;
         this.font = font;
+        this.alignment = alignment;
         state = ButtonState.DEFAULT;
     }
 
-    public void update(Input input, Queue<DrawCommand> outDraw) {
-        if (input.isDidPressMouse() && isInside(input.getMousePressedX(), input.getMousePressedY())) {
+    public void update(Input input, Queue<DrawCommand> outDraw, Queue<AudioCommand> outAudio) {
+        if (state == ButtonState.DEFAULT && isInside(input.getMouseX(), input.getMouseY())) {
+            state = ButtonState.HOVER;
+            PlayAudioCommand pac = new PlayAudioCommand(Sound.HOVER);
+            outAudio.add(pac);
+        }
+
+        if (state == ButtonState.HOVER && input.isDidPressMouse() && isInside(input.getMousePressedX(), input.getMousePressedY())) {
             state = ButtonState.PRESSED;
+            PlayAudioCommand pac = new PlayAudioCommand(Sound.CLICK);
+            outAudio.add(pac);
         }
 
         if (state == ButtonState.PRESSED && !input.isLeftMouseButtonDown()) {
-            state = ButtonState.DEFAULT;
-        }
-
-        if (state == ButtonState.DEFAULT && isInside(input.getMouseX(), input.getMouseY())) {
             state = ButtonState.HOVER;
         }
 
@@ -78,6 +87,16 @@ public class TextButton {
         this.text = text;
         this.w = font.getDrawWidth(text);
         this.h = font.size;
+        switch (alignment) {
+            case LEFT -> {
+            }
+            case CENTER -> {
+                x = x - font.getDrawWidth(text) / 2;
+            }
+            case RIGHT -> {
+                x = x - font.getDrawWidth(text);
+            }
+        }
     }
 
     public float getX() {

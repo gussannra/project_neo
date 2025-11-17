@@ -1,34 +1,31 @@
 package game;
 
+import audio.Sound;
 import audio.commands.AudioCommand;
+import audio.commands.PlayAudioCommand;
 import game.ui.TextButton;
+import game.view.MainMenu;
+import game.view.View;
+import game.view.ViewState;
 import graphics.TextFont;
 import graphics.commands.DrawCommand;
 import platform.Input;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Queue;
 
 public class Game {
-    private float x = 0;
-    private float y = 0;
-    private TextButton textButton;
+    Map<ViewState, View> viewMap;
+    ViewState currentViewState;
 
     public Game() {
-        textButton = new TextButton(0.2f, 0.2f, TextFont.MENU_FONT);
-        textButton.setText("Flashy begin");
+        viewMap = new HashMap<>();
+        viewMap.put(ViewState.MAIN_MENU, new MainMenu());
+        currentViewState = ViewState.MAIN_MENU;
     }
 
     public void update(final Input input, Queue<DrawCommand> outDraw, Queue<AudioCommand> outAudio) {
-        textButton.update(input, outDraw);
-
-
-//        if (input.isDidPressMouse()) {
-//            x = input.getMousePressedX();
-//            y = input.getMousePressedY();
-//            PlayAudioCommand pac = new PlayAudioCommand(Sound.MAIN_THEME);
-//            outAudio.add(pac);
-//        }
-//        DrawImageCommand command = new DrawImageCommand(x, y, Texture.PIG);
-//        outDraw.add(command);
+        viewMap.get(currentViewState).update(input, outDraw, outAudio);
     }
 }

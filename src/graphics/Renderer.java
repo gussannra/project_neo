@@ -107,7 +107,7 @@ public class Renderer implements DrawCommandVisitor {
     }
 
     private int convertToBufferPixels(float normalized) {
-        return (int) (normalized * 512);
+        return (int) (normalized * buffer.getWidth());
     }
 
     @Override
@@ -123,8 +123,9 @@ public class Renderer implements DrawCommandVisitor {
     public void visit(DrawTextCommand cmd) {
         int x = convertToBufferPixels(cmd.x());
         int y = convertToBufferPixels(cmd.y());
+        Font font = fontMap.get(cmd.font());
         g.setColor(colorMap.get(cmd.color()));
-        g.setFont(fontMap.get(cmd.font()));
+        g.setFont(font);
         g.drawString(cmd.text(), x, y);
     }
 
