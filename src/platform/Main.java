@@ -63,6 +63,7 @@ public class Main {
 //            System.out.println("\033[0;33mSeconds per frame: " + secondsPerFrame);
 //            System.out.println("\033[0;31mFrames per second: " + fps);
 
+            input.setSecondsPerFrame(secondsPerFrame);
             windowManager.updateInput(input);
 
             game.update(input, drawCommands, audioCommands);

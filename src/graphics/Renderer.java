@@ -114,9 +114,11 @@ public class Renderer implements DrawCommandVisitor {
     public void visit(DrawImageCommand cmd) {
         int x = convertToBufferPixels(cmd.x());
         int y = convertToBufferPixels(cmd.y());
+        int w = convertToBufferPixels(cmd.w());
+        int h = convertToBufferPixels(cmd.h());
         BufferedImage img = textureMap.get(cmd.texture());
 
-        g.drawImage(img, x, y, null);
+        g.drawImage(img, x, y, w, h,null);
     }
 
     @Override

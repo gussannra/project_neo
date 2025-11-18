@@ -2,6 +2,7 @@ package platform;
 
 public class Input {
     private UiInput uiInput;
+    private float secondsPerFrame;
     private float mousePressedX;
     private float mousePressedY;
     private boolean didPressMouse;
@@ -76,5 +77,13 @@ public class Input {
 
     public UiInput getUiInput() {
         return uiInput;
+    }
+
+    public float getSecondsPerFrame() {
+        return secondsPerFrame;
+    }
+
+    public void setSecondsPerFrame(float secondsPerFrame) {
+        this.secondsPerFrame = secondsPerFrame;
     }
 }
