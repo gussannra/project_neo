@@ -3,7 +3,7 @@ package game.ui;
 import audio.Sound;
 import audio.commands.AudioCommand;
 import audio.commands.PlayAudioCommand;
-import graphics.Alignment;
+import graphics.AlignmentX;
 import graphics.TextColor;
 import graphics.TextFont;
 import graphics.commands.DrawCommand;
@@ -25,9 +25,9 @@ public class TextButton {
     private ButtonState state;
     private String text;
     private TextFont font;
-    private Alignment alignment;
+    private AlignmentX alignment;
 
-    public TextButton(float x, float y, TextFont font, Alignment alignment) {
+    public TextButton(float x, float y, TextFont font, AlignmentX alignment) {
         this.x = x;
         this.y = y;
         this.w = 0;

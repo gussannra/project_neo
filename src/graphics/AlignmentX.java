@@ -1,6 +1,6 @@
 package graphics;
 
-public enum Alignment {
+public enum AlignmentX {
     LEFT,
     CENTER,
     RIGHT;

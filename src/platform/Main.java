@@ -25,7 +25,8 @@ public class Main {
 
         Renderer renderer = new Renderer(drawWidth, drawHeight);
         renderer.loadImage(Texture.PIG, new File("res/textures/test.png"));
-        renderer.loadImage(Texture.MAIN_LOGO, new File("res/textures/kittycat.png"));
+        renderer.loadImage(Texture.MAIN_LOGO, new File("res/textures/cave_logo_2.png"));
+        renderer.loadImage(Texture.MENU_BACKGROUND, new File("res/textures/cave.png"));
         InputListener inputListener = new InputListener(drawWidth, drawHeight);
 
         WindowManager windowManager = new WindowManager("project_neo", inputListener);
@@ -60,8 +61,8 @@ public class Main {
 
             windowManager.flip(renderer.getBuffer());
 
-//            System.out.println("\033[0;33mSeconds per frame: " + secondsPerFrame);
-//            System.out.println("\033[0;31mFrames per second: " + fps);
+            System.out.println("\033[0;33mSeconds per frame: " + secondsPerFrame);
+            System.out.println("\033[0;31mFrames per second: " + fps);
 
             input.setSecondsPerFrame(secondsPerFrame);
             windowManager.updateInput(input);

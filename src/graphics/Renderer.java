@@ -4,6 +4,7 @@ import game.ui.TextButton;
 import graphics.commands.*;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.util.*;
 
 import javax.imageio.ImageIO;
@@ -23,10 +24,13 @@ public class Renderer implements DrawCommandVisitor {
         textureMap = new HashMap<>();
         fontMap = new HashMap<>();
         colorMap = new HashMap<>();
-        buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         g = buffer.createGraphics();
         g.setBackground(Color.BLACK);
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+
 
         for (TextFont font : TextFont.values()) {
             int size = (int) (font.size * width * 1.2f); // TODO: don't hardcode.
@@ -110,15 +114,23 @@ public class Renderer implements DrawCommandVisitor {
         return (int) (normalized * buffer.getWidth());
     }
 
+    private float normalizedToSubpixels(float normalized) {
+        return (normalized * (float) buffer.getHeight());
+    }
+
     @Override
     public void visit(DrawImageCommand cmd) {
-        int x = convertToBufferPixels(cmd.x());
-        int y = convertToBufferPixels(cmd.y());
-        int w = convertToBufferPixels(cmd.w());
-        int h = convertToBufferPixels(cmd.h());
         BufferedImage img = textureMap.get(cmd.texture());
+        float x = normalizedToSubpixels(cmd.x());
+        float y = normalizedToSubpixels(cmd.y());
+        float w = normalizedToSubpixels(cmd.w()) / img.getWidth();
+        float h = normalizedToSubpixels(cmd.h()) / img.getHeight();
 
-        g.drawImage(img, x, y, w, h,null);
+        AffineTransform at = new AffineTransform();
+        at.translate(x, y);
+        at.scale(w, h);
+
+        g.drawImage(img, at,null);
     }
 
     @Override
