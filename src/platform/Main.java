@@ -27,6 +27,19 @@ public class Main {
         renderer.loadImage(Texture.PIG, new File("res/textures/test.png"));
         renderer.loadImage(Texture.MAIN_LOGO, new File("res/textures/cave_logo_2.png"));
         renderer.loadImage(Texture.MENU_BACKGROUND, new File("res/textures/cave.png"));
+
+        renderer.loadImage(Texture.MAIN_LOGO_FLASH_0, new File("res/textures/logo_flash_1.png"));
+        renderer.loadImage(Texture.MAIN_LOGO_FLASH_1, new File("res/textures/logo_flash_2.png"));
+        renderer.loadImage(Texture.MAIN_LOGO_FLASH_2, new File("res/textures/logo_flash_3.png"));
+        renderer.loadImage(Texture.MAIN_LOGO_FLASH_3, new File("res/textures/logo_flash_4.png"));
+        renderer.loadImage(Texture.MAIN_LOGO_FLASH_4, new File("res/textures/logo_flash_5.png"));
+        renderer.loadImage(Texture.MAIN_LOGO_FLASH_5, new File("res/textures/logo_flash_6.png"));
+        renderer.loadImage(Texture.MAIN_LOGO_FLASH_6, new File("res/textures/logo_flash_7.png"));
+        renderer.loadImage(Texture.MAIN_LOGO_FLASH_7, new File("res/textures/logo_flash_8.png"));
+        renderer.loadImage(Texture.MAIN_LOGO_FLASH_8, new File("res/textures/logo_flash_9.png"));
+        renderer.loadImage(Texture.MAIN_LOGO_FLASH_9, new File("res/textures/logo_flash_10.png"));
+        renderer.loadImage(Texture.MAIN_LOGO_FLASH_10, new File("res/textures/logo_flash_11.png"));
+
         InputListener inputListener = new InputListener(drawWidth, drawHeight);
 
         WindowManager windowManager = new WindowManager("project_neo", inputListener);

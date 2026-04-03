@@ -4,7 +4,6 @@ import audio.commands.AudioCommand;
 import game.Animation;
 import game.EaseFunction;
 import game.ui.Sprite;
-import graphics.AlignmentX;
 import graphics.Texture;
 import graphics.commands.DrawCommand;
 import graphics.commands.DrawImageCommand;
@@ -15,13 +14,27 @@ import java.util.Queue;
 
 public class MainMenu implements View {
     Sprite logoSprite;
+    Sprite flashSprite;
 
     public MainMenu() {
         Animation animation = new Animation(0.08f, 0.14f, 3f, EaseFunction.IN_OUT_QUAD);
-
+        animation.setPingPong(true);
         logoSprite = new Sprite(0f, 0f, 1f, 0.2f, Texture.MAIN_LOGO);
-
         logoSprite.setYAnimation(animation);
+
+        final int numFlashAnimationFrames = 11;
+        Animation flashAnimation = new Animation(0, numFlashAnimationFrames - 0.001f, 0.5f, EaseFunction.LINEAR);
+        flashSprite = new Sprite(logoSprite.getX(), logoSprite.getY(), logoSprite.getW(), logoSprite.getH(), Texture.MAIN_LOGO_FLASH_0);
+
+        for (Texture texture : Texture.values()) {
+            if (texture.name().startsWith("MAIN_LOGO_FLASH_") && !texture.name().startsWith("MAIN_LOGO_FLASH_0")) {
+                flashSprite.addTexture(texture);
+            }
+        }
+
+        flashSprite.setTextureIndexAnimation(flashAnimation);
+        flashSprite.setYAnimation(animation);
+
     }
 
     @Override
@@ -35,5 +48,6 @@ public class MainMenu implements View {
         uiInput.getExitButton().update(input, outDraw, outAudio);
 
         logoSprite.update(input, outDraw, outAudio);
+        flashSprite.update(input, outDraw, outAudio);
     }
 }

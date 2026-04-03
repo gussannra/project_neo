@@ -93,6 +93,10 @@ public class Sprite {
         outDraw.add(cmd);
     }
 
+    public void addTexture(Texture texture) {
+        textureList.add(texture);
+    }
+
     public void setXAnimation(Animation xAnimation) {
         this.xAnimation = xAnimation;
     }
@@ -119,5 +123,21 @@ public class Sprite {
 
     public void setTextureIndexAnimation(Animation textureIndexAnimation) {
         this.textureIndexAnimation = textureIndexAnimation;
+    }
+
+    public float getW() {
+        return w;
+    }
+
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
+    public float getH() {
+        return h;
     }
 }

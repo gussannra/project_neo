@@ -2,16 +2,20 @@ package game;
 
 public enum EaseFunction {
     CONSTANT_START(
-            ((start, end, t) -> start)
+            ((t) -> 0.0f)
+    ),
+
+    LINEAR(
+            ((t) -> t)
     ),
 
     IN_OUT_QUAD(
-            (start, end, t) -> (float) (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2)
+            (t) -> (float) (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2)
     ),
     IN_OUT_BOUNCE(
             new EasingFunction() {
                 @Override
-                public float ease(float start, float end, float t) {
+                public float ease(float t) {
                     return t < 0.5
                             ? (1 - easeOutBounce(1 - 2 * t)) / 2
                             : (1 + easeOutBounce(2 * t - 1)) / 2;
